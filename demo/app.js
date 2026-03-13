@@ -1,27 +1,47 @@
+import FiAvatar from '../src/components/FiAvatar.js';
+import FiBadge from '../src/components/FiBadge.js';
 import FiButton from '../src/components/FiButton.js';
 import FiCard from '../src/components/FiCard.js';
+import FiChangelog from '../src/components/FiChangelog.js';
 import FiChip from '../src/components/FiChip.js';
+import FiCollapsible from '../src/components/FiCollapsible.js';
+import FiEmptyState from '../src/components/FiEmptyState.js';
 import FiFilterPanel from '../src/components/FiFilterPanel.js';
+import FiGrid from '../src/components/FiGrid.js';
+import FiIcon from '../src/components/FiIcon.js';
+import FiInput from '../src/components/FiInput.js';
+import FiModal from '../src/components/FiModal.js';
+import FiNavBar from '../src/components/FiNavBar.js';
+import FiProgress from '../src/components/FiProgress.js';
 import FiSearchBar from '../src/components/FiSearchBar.js';
+import FiSelect from '../src/components/FiSelect.js';
+import FiSidebar from '../src/components/FiSidebar.js';
+import FiStepper from '../src/components/FiStepper.js';
 import FiTabs from '../src/components/FiTabs.js';
+import FiTextarea from '../src/components/FiTextarea.js';
+import FiToast from '../src/components/FiToast.js';
 import FiToggle from '../src/components/FiToggle.js';
 import { builtinIcons, renderIconSVG } from '../src/icons.js';
 
+import IntroPage from './intro.js';
 import ShowcasePage from './showcase.js';
 import DashboardPage from './dashboard.js';
 import SettingsPage from './settings.js';
+import ThemePickerPage from './theme-picker.js';
 
 const DemoApp = {
   name: 'demo-app',
 
   data() {
     return {
-      currentPage: 'showcase',
+      currentPage: 'home',
       darkMode: false,
       navTabs: [
+        { id: 'home', label: 'Home' },
         { id: 'showcase', label: 'Showcase' },
         { id: 'dashboard', label: 'Dashboard' },
         { id: 'settings', label: 'Settings' },
+        { id: 'theme', label: 'Theme Picker' },
       ],
     };
   },
@@ -34,7 +54,7 @@ const DemoApp = {
 
   created() {
     const hash = window.location.hash.slice(1);
-    if (['showcase', 'dashboard', 'settings'].includes(hash)) {
+    if (['home', 'showcase', 'dashboard', 'settings', 'theme'].includes(hash)) {
       this.currentPage = hash;
     }
   },
@@ -43,6 +63,7 @@ const DemoApp = {
     navigate(page) {
       this.currentPage = page;
       window.location.hash = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     },
   },
 
@@ -53,7 +74,7 @@ const DemoApp = {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <!-- Brand -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 cursor-pointer" @click="navigate('home')">
               <div class="w-8 h-8 bg-accent-brine rounded-xl flex items-center justify-center">
                 <span class="text-white font-serif text-lg font-bold">F</span>
               </div>
@@ -61,7 +82,7 @@ const DemoApp = {
             </div>
 
             <!-- Nav Tabs -->
-            <nav class="hidden sm:block">
+            <nav class="hidden md:block">
               <fi-tabs :tabs="navTabs" :model-value="currentPage" @update:model-value="navigate" variant="underline" />
             </nav>
 
@@ -84,23 +105,25 @@ const DemoApp = {
         </div>
 
         <!-- Mobile nav -->
-        <div class="sm:hidden px-4 pb-2">
+        <div class="md:hidden px-4 pb-2 overflow-x-auto">
           <fi-tabs :tabs="navTabs" :model-value="currentPage" @update:model-value="navigate" variant="pills" />
         </div>
       </header>
 
       <!-- Page content -->
       <main>
+        <intro-page v-if="currentPage === 'home'" @navigate="navigate" />
         <showcase-page v-if="currentPage === 'showcase'" />
         <dashboard-page v-if="currentPage === 'dashboard'" />
         <settings-page v-if="currentPage === 'settings'" />
+        <theme-picker-page v-if="currentPage === 'theme'" />
       </main>
 
       <!-- Footer -->
       <footer class="border-t border-bg-secondary dark:border-dark-secondary mt-16 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p class="text-sm text-text-muted dark:text-dark-text-secondary">
-            Fermenti UI Framework &middot; Built with Vue 3 + Tailwind CSS
+            Fermenti UI Framework &middot; Built with Vue 3 + Tailwind CSS &middot; Made with salt, patience, and good bacteria.
           </p>
         </div>
       </footer>
@@ -111,19 +134,43 @@ const DemoApp = {
 const { createApp } = Vue;
 const app = createApp(DemoApp);
 
-// Register framework components
-app.component('fi-button', FiButton);
-app.component('fi-card', FiCard);
-app.component('fi-chip', FiChip);
-app.component('fi-filter-panel', FiFilterPanel);
-app.component('fi-search-bar', FiSearchBar);
-app.component('fi-tabs', FiTabs);
-app.component('fi-toggle', FiToggle);
+// Register all framework components
+const components = {
+  'fi-avatar': FiAvatar,
+  'fi-badge': FiBadge,
+  'fi-button': FiButton,
+  'fi-card': FiCard,
+  'fi-changelog': FiChangelog,
+  'fi-chip': FiChip,
+  'fi-collapsible': FiCollapsible,
+  'fi-empty-state': FiEmptyState,
+  'fi-filter-panel': FiFilterPanel,
+  'fi-grid': FiGrid,
+  'fi-icon': FiIcon,
+  'fi-input': FiInput,
+  'fi-modal': FiModal,
+  'fi-nav-bar': FiNavBar,
+  'fi-progress': FiProgress,
+  'fi-search-bar': FiSearchBar,
+  'fi-select': FiSelect,
+  'fi-sidebar': FiSidebar,
+  'fi-stepper': FiStepper,
+  'fi-tabs': FiTabs,
+  'fi-textarea': FiTextarea,
+  'fi-toast': FiToast,
+  'fi-toggle': FiToggle,
+};
+
+Object.entries(components).forEach(([name, component]) => {
+  app.component(name, component);
+});
 
 // Register demo page components
+app.component('intro-page', IntroPage);
 app.component('showcase-page', ShowcasePage);
 app.component('dashboard-page', DashboardPage);
 app.component('settings-page', SettingsPage);
+app.component('theme-picker-page', ThemePickerPage);
 
 // Provide icons globally
 app.provide('builtinIcons', builtinIcons);

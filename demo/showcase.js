@@ -83,12 +83,32 @@ export default {
       progressValue: 65,
 
       // Icon grid
+      activeIconLib: 'builtin',
+      iconLibraries: [
+        { id: 'builtin', label: 'Built-in' },
+        { id: 'bootstrap', label: 'Bootstrap Icons' },
+        { id: 'material', label: 'Material Symbols' },
+      ],
       iconNames: [
         'search', 'close', 'chevron-down', 'chevron-right', 'chevron-left',
         'check', 'plus', 'minus', 'settings', 'filter',
         'menu', 'grid', 'list', 'edit', 'trash',
         'download', 'upload', 'link', 'star', 'info',
         'warning', 'eye', 'eye-off',
+      ],
+      bootstrapIconNames: [
+        'house', 'search', 'heart', 'star', 'gear',
+        'person', 'bell', 'calendar', 'envelope', 'camera',
+        'bookmark', 'chat', 'cloud', 'download', 'upload',
+        'eye', 'file-earmark', 'folder', 'globe', 'lock',
+        'pencil', 'trash', 'check-circle', 'x-circle',
+      ],
+      materialIconNames: [
+        'home', 'search', 'favorite', 'star', 'settings',
+        'person', 'notifications', 'calendar_today', 'mail', 'photo_camera',
+        'bookmark', 'chat', 'cloud', 'download', 'upload',
+        'visibility', 'description', 'folder', 'language', 'lock',
+        'edit', 'delete', 'check_circle', 'cancel',
       ],
     };
   },
@@ -403,18 +423,62 @@ export default {
       <!-- ==================== ICONS ==================== -->
       <section class="space-y-6">
         <h2 class="font-serif text-2xl text-text-primary dark:text-dark-text border-b border-bg-secondary dark:border-dark-secondary pb-2">Icons</h2>
-        <p class="text-text-secondary dark:text-dark-text-secondary text-sm">Built-in SVG icon set. {{ iconNames.length }} icons included.</p>
+        <p class="text-text-secondary dark:text-dark-text-secondary text-sm">FiIcon supports multiple icon libraries. Switch between them below.</p>
 
-        <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+        <!-- Library switcher -->
+        <div class="flex flex-wrap gap-2">
+          <button v-for="lib in iconLibraries" :key="lib.id"
+            @click="activeIconLib = lib.id"
+            :class="[
+              'px-3 py-1.5 text-xs rounded-lg font-medium transition-all',
+              activeIconLib === lib.id
+                ? 'bg-accent-brine text-white shadow-warm'
+                : 'bg-bg-secondary dark:bg-dark-secondary text-text-secondary dark:text-dark-text-secondary hover:bg-bg-secondary/70'
+            ]"
+          >{{ lib.label }}</button>
+        </div>
+
+        <!-- Builtin icons -->
+        <div v-if="activeIconLib === 'builtin'" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
           <div
             v-for="name in iconNames"
             :key="name"
             class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
           >
-            <span class="text-text-primary dark:text-dark-text" v-html="getIconSVG(name)"></span>
+            <fi-icon :name="name" library="builtin" size="lg" />
             <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
           </div>
         </div>
+
+        <!-- Bootstrap Icons -->
+        <div v-if="activeIconLib === 'bootstrap'" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+          <div
+            v-for="name in bootstrapIconNames"
+            :key="name"
+            class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
+          >
+            <fi-icon :name="name" library="bootstrap" size="lg" />
+            <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
+          </div>
+        </div>
+
+        <!-- Material Symbols -->
+        <div v-if="activeIconLib === 'material'" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+          <div
+            v-for="name in materialIconNames"
+            :key="name"
+            class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
+          >
+            <fi-icon :name="name" library="material" size="lg" />
+            <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-text-muted dark:text-dark-text-secondary">
+          <template v-if="activeIconLib === 'builtin'">{{ iconNames.length }} built-in SVG icons. No external dependencies needed.</template>
+          <template v-else-if="activeIconLib === 'bootstrap'">Bootstrap Icons — 2,000+ open source icons. Load via CDN.</template>
+          <template v-else-if="activeIconLib === 'material'">Material Symbols — Google's icon library. Load via Google Fonts.</template>
+        </p>
       </section>
 
       <!-- ==================== TABS ==================== -->

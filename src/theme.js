@@ -48,9 +48,9 @@ const fermentiPreset = {
         xl: '12px',
       },
       boxShadow: {
-        warm: 'none',
-        'warm-lg': 'none',
-        'warm-xl': 'none',
+        warm: '0 2px 8px -2px rgba(139, 107, 74, 0.25)',
+        'warm-lg': '0 8px 24px -4px rgba(139, 107, 74, 0.3)',
+        'warm-xl': '0 16px 40px -8px rgba(139, 107, 74, 0.35)',
       },
       transitionTimingFunction: {
         ferment: 'cubic-bezier(0.4, 0, 0.2, 1)',

@@ -10,7 +10,7 @@ export default {
     variant: {
       type: String,
       default: 'primary',
-      validator: v => ['primary', 'secondary', 'ghost', 'danger'].includes(v)
+      validator: v => ['primary', 'secondary', 'ghost', 'danger', 'outline'].includes(v)
     },
     size: {
       type: String,
@@ -32,10 +32,11 @@ export default {
   computed: {
     variantClasses() {
       const variants = {
-        primary: 'bg-accent-brine text-white hover:bg-accent-brine/90 shadow-warm hover:shadow-warm-lg active:shadow-warm',
-        secondary: 'bg-bg-secondary dark:bg-dark-secondary text-text-primary dark:text-dark-text hover:bg-bg-secondary/80 dark:hover:bg-dark-secondary/80',
-        ghost: 'bg-transparent text-text-primary dark:text-dark-text hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50',
-        danger: 'bg-accent-ferment text-white hover:bg-accent-ferment/90 shadow-warm hover:shadow-warm-lg active:shadow-warm'
+        primary: 'bg-accent-brine text-white border border-accent-brine/30 shadow-warm hover:shadow-warm-lg hover:brightness-110 active:shadow-warm active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent-brine/50 focus-visible:ring-offset-2',
+        secondary: 'bg-bg-secondary dark:bg-dark-secondary text-text-primary dark:text-dark-text border border-text-muted/20 dark:border-dark-text/10 hover:bg-bg-secondary/70 dark:hover:bg-dark-secondary/70 hover:shadow-sm active:bg-bg-secondary/50 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent-brine/50 focus-visible:ring-offset-2',
+        ghost: 'bg-transparent text-text-primary dark:text-dark-text border border-transparent hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50 hover:border-text-muted/10 active:bg-bg-secondary/70 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent-brine/50 focus-visible:ring-offset-2',
+        danger: 'bg-accent-ferment text-white border border-accent-ferment/30 shadow-warm hover:shadow-warm-lg hover:brightness-110 active:shadow-warm active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent-ferment/50 focus-visible:ring-offset-2',
+        outline: 'bg-transparent text-accent-brine border-2 border-accent-brine hover:bg-accent-brine/10 active:bg-accent-brine/20 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent-brine/50 focus-visible:ring-offset-2',
       };
       return variants[this.variant] || variants.primary;
     },
