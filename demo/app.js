@@ -27,7 +27,6 @@ import IntroPage from './intro.js';
 import ShowcasePage from './showcase.js';
 import DashboardPage from './dashboard.js';
 import SettingsPage from './settings.js';
-import ThemePickerPage from './theme-picker.js';
 import ThemePanel from './theme-panel.js';
 
 const DemoApp = {
@@ -43,7 +42,6 @@ const DemoApp = {
         { id: 'showcase', label: 'Showcase' },
         { id: 'dashboard', label: 'Dashboard' },
         { id: 'settings', label: 'Settings' },
-        { id: 'theme', label: 'Theme Picker' },
       ],
     };
   },
@@ -56,7 +54,7 @@ const DemoApp = {
 
   created() {
     const hash = window.location.hash.slice(1);
-    if (['home', 'showcase', 'dashboard', 'settings', 'theme'].includes(hash)) {
+    if (['home', 'showcase', 'dashboard', 'settings'].includes(hash)) {
       this.currentPage = hash;
     }
   },
@@ -135,7 +133,6 @@ const DemoApp = {
         <showcase-page v-if="currentPage === 'showcase'" />
         <dashboard-page v-if="currentPage === 'dashboard'" />
         <settings-page v-if="currentPage === 'settings'" />
-        <theme-picker-page v-if="currentPage === 'theme'" />
       </main>
 
       <!-- Footer -->
@@ -189,7 +186,6 @@ app.component('intro-page', IntroPage);
 app.component('showcase-page', ShowcasePage);
 app.component('dashboard-page', DashboardPage);
 app.component('settings-page', SettingsPage);
-app.component('theme-picker-page', ThemePickerPage);
 app.component('fi-theme-panel', ThemePanel);
 
 // Provide icons globally
