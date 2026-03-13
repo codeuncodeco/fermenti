@@ -17,6 +17,9 @@
   --fi-accent-ferment: #D4553A;
   --fi-accent-culture: #7B8F3A;
   --fi-accent-aged: #8B6B4A;
+  --fi-font-serif: "Instrument Serif", Georgia, serif;
+  --fi-font-sans: "DM Sans", system-ui, sans-serif;
+  --fi-font-mono: "JetBrains Mono", monospace;
   --fi-tier-beginner: #8EAE68;
   --fi-tier-seasoned: #C4A35A;
   --fi-tier-ambitious: #D4813A;

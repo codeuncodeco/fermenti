@@ -244,13 +244,7 @@ export default {
     },
 
     applyColors() {
-      const root = document.documentElement;
-      root.style.setProperty('--fi-bg-primary', this.colors.bgPrimary);
-      root.style.setProperty('--fi-bg-secondary', this.colors.bgSecondary);
-      root.style.setProperty('--fi-bg-card', this.colors.bgCard);
-      root.style.setProperty('--fi-accent-brine', this.colors.accentBrine);
-      root.style.setProperty('--fi-text-primary', this.colors.textPrimary);
-      root.style.setProperty('--fi-text-muted', this.colors.textMuted);
+      this.injectThemeStyle();
     },
 
     onColorChange(key, event) {
@@ -282,10 +276,34 @@ export default {
       const fontName = event.target.value;
       this.fonts[category] = fontName;
       this.loadFont(fontName);
-      const root = document.documentElement.style;
-      if (category === 'serif') {
-        root.setProperty('font-family', `"${fontName}", Georgia, serif`);
+      this.injectThemeStyle();
+    },
+
+    injectThemeStyle() {
+      let style = document.getElementById('fi-theme-overrides');
+      if (!style) {
+        style = document.createElement('style');
+        style.id = 'fi-theme-overrides';
+        document.head.appendChild(style);
       }
+      style.textContent = `
+        :root:not(.dark) {
+          --fi-bg-primary: ${this.colors.bgPrimary};
+          --fi-bg-secondary: ${this.colors.bgSecondary};
+          --fi-bg-card: ${this.colors.bgCard};
+          --fi-accent-brine: ${this.colors.accentBrine};
+          --fi-text-primary: ${this.colors.textPrimary};
+          --fi-text-muted: ${this.colors.textMuted};
+          --fi-font-serif: "${this.fonts.serif}", Georgia, serif;
+          --fi-font-sans: "${this.fonts.sans}", system-ui, sans-serif;
+          --fi-font-mono: "${this.fonts.mono}", monospace;
+        }
+        .dark {
+          --fi-font-serif: "${this.fonts.serif}", Georgia, serif;
+          --fi-font-sans: "${this.fonts.sans}", system-ui, sans-serif;
+          --fi-font-mono: "${this.fonts.mono}", monospace;
+        }
+      `;
     },
 
     selectIconLibrary(libId) {
