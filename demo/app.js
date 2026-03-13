@@ -28,6 +28,7 @@ import ShowcasePage from './showcase.js';
 import DashboardPage from './dashboard.js';
 import SettingsPage from './settings.js';
 import ThemePickerPage from './theme-picker.js';
+import ThemePanel from './theme-panel.js';
 
 const DemoApp = {
   name: 'demo-app',
@@ -36,6 +37,7 @@ const DemoApp = {
     return {
       currentPage: 'home',
       darkMode: false,
+      themePanelOpen: false,
       navTabs: [
         { id: 'home', label: 'Home' },
         { id: 'showcase', label: 'Showcase' },
@@ -86,8 +88,22 @@ const DemoApp = {
               <fi-tabs :tabs="navTabs" :model-value="currentPage" @update:model-value="navigate" variant="underline" />
             </nav>
 
-            <!-- Dark mode toggle -->
-            <div class="flex items-center gap-3">
+            <!-- Dark mode toggle + Theme panel -->
+            <div class="relative flex items-center gap-2">
+              <!-- Theme picker toggle -->
+              <button
+                data-theme-toggle
+                @click.stop="themePanelOpen = !themePanelOpen"
+                class="p-2 rounded-xl hover:bg-bg-secondary dark:hover:bg-dark-secondary transition-colors"
+                :class="themePanelOpen ? 'bg-bg-secondary dark:bg-dark-secondary' : ''"
+                aria-label="Open theme picker"
+              >
+                <svg class="w-5 h-5 text-text-secondary dark:text-dark-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                </svg>
+              </button>
+
+              <!-- Dark mode toggle -->
               <button
                 @click="darkMode = !darkMode"
                 class="p-2 rounded-xl hover:bg-bg-secondary dark:hover:bg-dark-secondary transition-colors"
@@ -100,6 +116,9 @@ const DemoApp = {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </button>
+
+              <!-- Floating theme panel -->
+              <fi-theme-panel v-model:open="themePanelOpen" />
             </div>
           </div>
         </div>
@@ -171,6 +190,7 @@ app.component('showcase-page', ShowcasePage);
 app.component('dashboard-page', DashboardPage);
 app.component('settings-page', SettingsPage);
 app.component('theme-picker-page', ThemePickerPage);
+app.component('fi-theme-panel', ThemePanel);
 
 // Provide icons globally
 app.provide('builtinIcons', builtinIcons);
