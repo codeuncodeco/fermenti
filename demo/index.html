@@ -18,16 +18,16 @@
       theme: {
         extend: {
           colors: {
-            bg: { primary: '#FAF7F2', secondary: '#F2ECE3', card: '#FFFFFF' },
-            text: { primary: '#2C1810', secondary: '#6B5344', muted: '#A89485' },
-            accent: { brine: '#C4A35A', ferment: '#D4553A', culture: '#7B8F3A', aged: '#8B6B4A' },
-            tier: { beginner: '#8EAE68', seasoned: '#C4A35A', ambitious: '#D4813A', advanced: '#D4553A', master: '#6B3A5C' },
-            dark: { primary: '#1A1410', secondary: '#241E18', card: '#2E2620', text: '#F2ECE3', 'text-secondary': '#C4B5A3' }
+            bg: { primary: 'var(--fi-bg-primary)', secondary: 'var(--fi-bg-secondary)', card: 'var(--fi-bg-card)' },
+            text: { primary: 'var(--fi-text-primary)', secondary: 'var(--fi-text-secondary)', muted: 'var(--fi-text-muted)' },
+            accent: { brine: 'var(--fi-accent-brine)', ferment: 'var(--fi-accent-ferment)', culture: 'var(--fi-accent-culture)', aged: 'var(--fi-accent-aged)' },
+            tier: { beginner: 'var(--fi-tier-beginner)', seasoned: 'var(--fi-tier-seasoned)', ambitious: 'var(--fi-tier-ambitious)', advanced: 'var(--fi-tier-advanced)', master: 'var(--fi-tier-master)' },
+            dark: { primary: 'var(--fi-bg-primary)', secondary: 'var(--fi-bg-secondary)', card: 'var(--fi-bg-card)', text: 'var(--fi-text-primary)', 'text-secondary': 'var(--fi-text-secondary)' }
           },
           fontFamily: {
-            serif: ['"Instrument Serif"', 'Georgia', 'serif'],
-            sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
+            serif: 'var(--fi-font-serif)',
+            sans: 'var(--fi-font-sans)',
+            mono: 'var(--fi-font-mono)',
           },
           borderRadius: { '2xl': '16px', xl: '12px' },
           boxShadow: {
@@ -53,7 +53,7 @@
 
   <style>
     body {
-      font-family: 'DM Sans', system-ui, sans-serif;
+      font-family: var(--fi-font-sans);
     }
   </style>
 </head>
