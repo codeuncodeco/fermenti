@@ -1,3 +1,4 @@
+import '../src/css/fermenti.css';
 import FiAvatar from '../src/components/FiAvatar.js';
 import FiBadge from '../src/components/FiBadge.js';
 import FiButton from '../src/components/FiButton.js';
