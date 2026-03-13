@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fermenti UI - Demo</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bg: { primary: 'var(--fi-bg-primary)', secondary: 'var(--fi-bg-secondary)', card: 'var(--fi-bg-card)' },
+            text: { primary: 'var(--fi-text-primary)', secondary: 'var(--fi-text-secondary)', muted: 'var(--fi-text-muted)' },
+            accent: { brine: 'var(--fi-accent-brine)', ferment: 'var(--fi-accent-ferment)', culture: 'var(--fi-accent-culture)', aged: 'var(--fi-accent-aged)' },
+            tier: { beginner: 'var(--fi-tier-beginner)', seasoned: 'var(--fi-tier-seasoned)', ambitious: 'var(--fi-tier-ambitious)', advanced: 'var(--fi-tier-advanced)', master: 'var(--fi-tier-master)' },
+            dark: { primary: 'var(--fi-bg-primary)', secondary: 'var(--fi-bg-secondary)', card: 'var(--fi-bg-card)', text: 'var(--fi-text-primary)', 'text-secondary': 'var(--fi-text-secondary)' }
+          },
+          fontFamily: {
+            serif: 'var(--fi-font-serif)',
+            sans: 'var(--fi-font-sans)',
+            mono: 'var(--fi-font-mono)',
+          },
+          borderRadius: { '2xl': '16px', xl: '12px' },
+          boxShadow: {
+            warm: '0 2px 8px -2px rgba(139, 107, 74, 0.25)',
+            'warm-lg': '0 8px 24px -4px rgba(139, 107, 74, 0.3)',
+            'warm-xl': '0 16px 40px -8px rgba(139, 107, 74, 0.35)',
+          },
+          transitionTimingFunction: { ferment: 'cubic-bezier(0.4, 0, 0.2, 1)' },
+        }
+      }
+    }
+  </script>
+
+  <!-- Icon Libraries (loaded on demand by theme picker, pre-loaded for showcase) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+  <!-- Fermenti CSS -->
+  <link rel="stylesheet" href="./src/css/fermenti.css" />
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <style>
+    body {
+      font-family: var(--fi-font-sans);
+    }
+  </style>
+</head>
+<body class="bg-bg-primary dark:bg-dark-primary text-text-primary dark:text-dark-text min-h-screen transition-colors duration-300">
+  <div id="app">
+    <demo-app></demo-app>
+  </div>
+
+  <script type="module" src="./demo/app.js"></script>
+</body>
+</html>
