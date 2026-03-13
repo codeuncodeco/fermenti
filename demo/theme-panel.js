@@ -80,38 +80,8 @@ export default {
       serifFonts: ['Instrument Serif', 'Playfair Display', 'Merriweather', 'Lora', 'Crimson Text', 'EB Garamond', 'Cormorant Garamond', 'Bitter'],
       sansFonts: ['DM Sans', 'Inter', 'Poppins', 'Nunito', 'Outfit', 'Work Sans', 'Source Sans 3', 'Rubik'],
       monoFonts: ['JetBrains Mono', 'Fira Code', 'Source Code Pro', 'IBM Plex Mono', 'Space Mono', 'Inconsolata'],
-      activeIconLibrary: 'builtin',
-      iconLibraries: [
-        { id: 'builtin', name: 'Builtin', description: 'Default SVG icons' },
-        { id: 'lucide', name: 'Lucide', description: 'Consistent stroke icons', url: 'https://unpkg.com/lucide@latest', isScript: true },
-        { id: 'bootstrap', name: 'Bootstrap', description: 'Bootstrap icon set', url: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css' },
-        { id: 'tabler', name: 'Tabler', description: '4000+ free icons', url: 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css' },
-        { id: 'phosphor', name: 'Phosphor', description: 'Flexible icon family', url: 'https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css' },
-        { id: 'material', name: 'Material', description: 'Google Material icons', url: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined' },
-        { id: 'fontawesome', name: 'Font Awesome', description: 'Iconic SVG toolkit', url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css' },
-      ],
-      builtinIconNames: ['search', 'settings', 'star', 'heart', 'check', 'plus', 'edit', 'trash', 'filter', 'download'],
-      externalIconSamples: {
-        lucide: [
-          { name: 'home', value: 'home' },
-          { name: 'search', value: 'search' },
-          { name: 'heart', value: 'heart' },
-          { name: 'star', value: 'star' },
-          { name: 'settings', value: 'settings' },
-          { name: 'user', value: 'user' },
-        ],
-        bootstrap: ['bi-house', 'bi-search', 'bi-heart', 'bi-star', 'bi-gear', 'bi-person'],
-        tabler: ['ti ti-home', 'ti ti-search', 'ti ti-heart', 'ti ti-star', 'ti ti-settings', 'ti ti-user'],
-        phosphor: ['ph ph-house', 'ph ph-magnifying-glass', 'ph ph-heart', 'ph ph-star', 'ph ph-gear', 'ph ph-user'],
-        material: ['home', 'search', 'favorite', 'star', 'settings', 'person'],
-        fontawesome: ['fa-solid fa-house', 'fa-solid fa-magnifying-glass', 'fa-solid fa-heart', 'fa-solid fa-star', 'fa-solid fa-gear', 'fa-solid fa-user'],
-      },
       copied: '',
     };
-  },
-
-  inject: {
-    builtinIcons: { from: 'builtinIcons', default: () => ({}) },
   },
 
   computed: {
@@ -295,48 +265,6 @@ export default {
       `;
     },
 
-    // --- Icon library ---
-    selectIconLibrary(libId) {
-      this.activeIconLibrary = libId;
-      const lib = this.iconLibraries.find(l => l.id === libId);
-      if (!lib || libId === 'builtin') return;
-      this.loadIconLibrary(lib);
-    },
-
-    loadIconLibrary(lib) {
-      if (lib.isScript) {
-        if (document.querySelector(`script[data-icon-lib="${lib.id}"]`)) return;
-        const script = document.createElement('script');
-        script.src = lib.url;
-        script.dataset.iconLib = lib.id;
-        script.onload = () => {
-          if (window.lucide) window.lucide.createIcons();
-        };
-        document.head.appendChild(script);
-      } else {
-        if (document.querySelector(`link[data-icon-lib="${lib.id}"]`)) return;
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = lib.url;
-        link.dataset.iconLib = lib.id;
-        document.head.appendChild(link);
-      }
-    },
-
-    getBuiltinIconSVG(name) {
-      const icon = this.builtinIcons[name];
-      if (!icon) return '';
-      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${icon.viewBox}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="${icon.paths}"></path></svg>`;
-    },
-
-    getIconLabel(libId, ref) {
-      if (libId === 'bootstrap') return ref.replace('bi-', '');
-      if (libId === 'tabler') return ref.replace('ti ti-', '');
-      if (libId === 'phosphor') return ref.replace('ph ph-', '');
-      if (libId === 'fontawesome') return ref.replace('fa-solid fa-', '');
-      return ref;
-    },
-
     presetSwatchColors(preset) {
       const c = preset.colors;
       return [c.bgPrimary, c.bgSecondary, c.accentBrine, c.textPrimary];
@@ -419,7 +347,6 @@ export default {
               { id: 'presets', label: 'Presets' },
               { id: 'colors', label: 'Colors' },
               { id: 'fonts', label: 'Fonts' },
-              { id: 'icons', label: 'Icons' },
               { id: 'export', label: 'Export' },
             ]"
             :key="tab.id"
@@ -556,119 +483,6 @@ export default {
               <p class="text-xs text-text-muted dark:text-dark-text-secondary" :style="{ fontFamily: '\\'' + fonts.mono + '\\', monospace' }">
                 const culture = await ferment();
               </p>
-            </div>
-          </div>
-
-          <!-- === ICONS TAB === -->
-          <div v-if="activeTab === 'icons'" class="space-y-3">
-            <p class="text-xs text-text-muted dark:text-dark-text-secondary">Select an icon library. External libraries load from CDN.</p>
-
-            <!-- Library selector -->
-            <div class="space-y-1.5">
-              <button
-                v-for="lib in iconLibraries"
-                :key="lib.id"
-                @click="selectIconLibrary(lib.id)"
-                class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg border transition-all duration-150"
-                :class="activeIconLibrary === lib.id
-                  ? 'border-accent-brine bg-accent-brine/5'
-                  : 'border-bg-secondary dark:border-dark-secondary hover:border-text-muted/30'"
-              >
-                <div class="w-2 h-2 rounded-full shrink-0" :class="activeIconLibrary === lib.id ? 'bg-accent-brine' : 'bg-text-muted/30'"></div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-xs font-medium text-text-primary dark:text-dark-text">{{ lib.name }}</p>
-                  <p class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ lib.description }}</p>
-                </div>
-              </button>
-            </div>
-
-            <!-- Sample icons -->
-            <div class="pt-3 border-t border-bg-secondary dark:border-dark-secondary">
-              <p class="text-[10px] uppercase tracking-wider font-semibold text-text-muted dark:text-dark-text-secondary mb-3">Sample Icons</p>
-
-              <!-- Builtin -->
-              <div v-if="activeIconLibrary === 'builtin'" class="grid grid-cols-5 gap-2">
-                <div
-                  v-for="name in builtinIconNames"
-                  :key="name"
-                  class="flex flex-col items-center gap-1 p-1.5 rounded-lg hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50"
-                >
-                  <div class="w-5 h-5 text-text-primary dark:text-dark-text" v-html="getBuiltinIconSVG(name)"></div>
-                  <span class="text-[9px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
-                </div>
-              </div>
-
-              <!-- Lucide -->
-              <div v-else-if="activeIconLibrary === 'lucide'" class="grid grid-cols-3 gap-2">
-                <div
-                  v-for="icon in externalIconSamples.lucide"
-                  :key="icon.name"
-                  class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50"
-                >
-                  <i :data-lucide="icon.value" class="w-5 h-5 text-text-primary dark:text-dark-text"></i>
-                  <span class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ icon.name }}</span>
-                </div>
-              </div>
-
-              <!-- Bootstrap -->
-              <div v-else-if="activeIconLibrary === 'bootstrap'" class="grid grid-cols-3 gap-2">
-                <div
-                  v-for="cls in externalIconSamples.bootstrap"
-                  :key="cls"
-                  class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50"
-                >
-                  <i :class="cls" class="text-text-primary dark:text-dark-text" style="font-size:18px;"></i>
-                  <span class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ getIconLabel('bootstrap', cls) }}</span>
-                </div>
-              </div>
-
-              <!-- Tabler -->
-              <div v-else-if="activeIconLibrary === 'tabler'" class="grid grid-cols-3 gap-2">
-                <div
-                  v-for="cls in externalIconSamples.tabler"
-                  :key="cls"
-                  class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50"
-                >
-                  <i :class="cls" class="text-text-primary dark:text-dark-text" style="font-size:18px;"></i>
-                  <span class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ getIconLabel('tabler', cls) }}</span>
-                </div>
-              </div>
-
-              <!-- Phosphor -->
-              <div v-else-if="activeIconLibrary === 'phosphor'" class="grid grid-cols-3 gap-2">
-                <div
-                  v-for="cls in externalIconSamples.phosphor"
-                  :key="cls"
-                  class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50"
-                >
-                  <i :class="cls" class="text-text-primary dark:text-dark-text" style="font-size:18px;"></i>
-                  <span class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ getIconLabel('phosphor', cls) }}</span>
-                </div>
-              </div>
-
-              <!-- Material -->
-              <div v-else-if="activeIconLibrary === 'material'" class="grid grid-cols-3 gap-2">
-                <div
-                  v-for="name in externalIconSamples.material"
-                  :key="name"
-                  class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50"
-                >
-                  <span class="material-symbols-outlined text-text-primary dark:text-dark-text" style="font-size:18px;">{{ name }}</span>
-                  <span class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ name }}</span>
-                </div>
-              </div>
-
-              <!-- Font Awesome -->
-              <div v-else-if="activeIconLibrary === 'fontawesome'" class="grid grid-cols-3 gap-2">
-                <div
-                  v-for="cls in externalIconSamples.fontawesome"
-                  :key="cls"
-                  class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-bg-secondary/50 dark:hover:bg-dark-secondary/50"
-                >
-                  <i :class="cls" class="text-text-primary dark:text-dark-text" style="font-size:16px;"></i>
-                  <span class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ getIconLabel('fontawesome', cls) }}</span>
-                </div>
-              </div>
             </div>
           </div>
 
