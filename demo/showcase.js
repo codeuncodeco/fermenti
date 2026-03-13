@@ -82,33 +82,19 @@ export default {
       // Progress demo
       progressValue: 65,
 
-      // Icon grid
-      activeIconLib: 'builtin',
-      iconLibraries: [
-        { id: 'builtin', label: 'Built-in' },
-        { id: 'bootstrap', label: 'Bootstrap Icons' },
-        { id: 'material', label: 'Material Symbols' },
+      // Icon grid — Lucide is the recommended library
+      lucideIconNames: [
+        'home', 'search', 'heart', 'star', 'settings', 'user',
+        'bell', 'calendar', 'mail', 'camera', 'bookmark', 'message-square',
+        'cloud', 'download', 'upload', 'eye', 'file-text', 'folder',
+        'globe', 'lock', 'pencil', 'trash-2', 'check-circle', 'x-circle',
       ],
-      iconNames: [
+      builtinIconNames: [
         'search', 'close', 'chevron-down', 'chevron-right', 'chevron-left',
         'check', 'plus', 'minus', 'settings', 'filter',
         'menu', 'grid', 'list', 'edit', 'trash',
         'download', 'upload', 'link', 'star', 'info',
         'warning', 'eye', 'eye-off',
-      ],
-      bootstrapIconNames: [
-        'house', 'search', 'heart', 'star', 'gear',
-        'person', 'bell', 'calendar', 'envelope', 'camera',
-        'bookmark', 'chat', 'cloud', 'download', 'upload',
-        'eye', 'file-earmark', 'folder', 'globe', 'lock',
-        'pencil', 'trash', 'check-circle', 'x-circle',
-      ],
-      materialIconNames: [
-        'home', 'search', 'favorite', 'star', 'settings',
-        'person', 'notifications', 'calendar_today', 'mail', 'photo_camera',
-        'bookmark', 'chat', 'cloud', 'download', 'upload',
-        'visibility', 'description', 'folder', 'language', 'lock',
-        'edit', 'delete', 'check_circle', 'cancel',
       ],
     };
   },
@@ -154,6 +140,25 @@ export default {
       };
       return map[type] || map.info;
     },
+  },
+
+  mounted() {
+    // Load Lucide for the icon showcase
+    if (!document.querySelector('script[data-icon-lib="lucide"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/lucide@latest';
+      script.dataset.iconLib = 'lucide';
+      script.onload = () => { if (window.lucide) window.lucide.createIcons(); };
+      document.head.appendChild(script);
+    } else if (window.lucide) {
+      this.$nextTick(() => window.lucide.createIcons());
+    }
+  },
+
+  updated() {
+    if (window.lucide) {
+      this.$nextTick(() => window.lucide.createIcons());
+    }
   },
 
   template: `
@@ -423,61 +428,40 @@ export default {
       <!-- ==================== ICONS ==================== -->
       <section class="space-y-6">
         <h2 class="font-serif text-2xl text-text-primary dark:text-dark-text border-b border-bg-secondary dark:border-dark-secondary pb-2">Icons</h2>
-        <p class="text-text-secondary dark:text-dark-text-secondary text-sm">FiIcon supports multiple icon libraries. Switch between them below.</p>
+        <p class="text-text-secondary dark:text-dark-text-secondary text-sm">FiIcon supports multiple libraries. <span class="font-medium text-accent-brine">Lucide</span> is the recommended default.</p>
 
-        <!-- Library switcher -->
-        <div class="flex flex-wrap gap-2">
-          <button v-for="lib in iconLibraries" :key="lib.id"
-            @click="activeIconLib = lib.id"
-            :class="[
-              'px-3 py-1.5 text-xs rounded-lg font-medium transition-all',
-              activeIconLib === lib.id
-                ? 'bg-accent-brine text-white shadow-warm'
-                : 'bg-bg-secondary dark:bg-dark-secondary text-text-secondary dark:text-dark-text-secondary hover:bg-bg-secondary/70'
-            ]"
-          >{{ lib.label }}</button>
-        </div>
-
-        <!-- Builtin icons -->
-        <div v-if="activeIconLib === 'builtin'" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-          <div
-            v-for="name in iconNames"
-            :key="name"
-            class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
-          >
-            <fi-icon :name="name" library="builtin" size="lg" />
-            <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
+        <!-- Lucide icons (recommended) -->
+        <div>
+          <p class="text-xs uppercase tracking-wider font-semibold text-text-muted dark:text-dark-text-secondary mb-3">Lucide Icons</p>
+          <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+            <div
+              v-for="name in lucideIconNames"
+              :key="name"
+              class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
+            >
+              <fi-icon :name="name" library="lucide" size="lg" />
+              <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
+            </div>
           </div>
         </div>
 
-        <!-- Bootstrap Icons -->
-        <div v-if="activeIconLib === 'bootstrap'" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-          <div
-            v-for="name in bootstrapIconNames"
-            :key="name"
-            class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
-          >
-            <fi-icon :name="name" library="bootstrap" size="lg" />
-            <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
-          </div>
-        </div>
-
-        <!-- Material Symbols -->
-        <div v-if="activeIconLib === 'material'" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-          <div
-            v-for="name in materialIconNames"
-            :key="name"
-            class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
-          >
-            <fi-icon :name="name" library="material" size="lg" />
-            <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
+        <!-- Builtin icons (fallback) -->
+        <div>
+          <p class="text-xs uppercase tracking-wider font-semibold text-text-muted dark:text-dark-text-secondary mb-3">Built-in Icons (No CDN)</p>
+          <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+            <div
+              v-for="name in builtinIconNames"
+              :key="name"
+              class="flex flex-col items-center gap-2 p-3 rounded-xl bg-bg-card dark:bg-dark-card border border-bg-secondary dark:border-dark-secondary hover:border-accent-brine/50 transition-colors"
+            >
+              <fi-icon :name="name" library="builtin" size="lg" />
+              <span class="text-[10px] text-text-muted dark:text-dark-text-secondary truncate w-full text-center">{{ name }}</span>
+            </div>
           </div>
         </div>
 
         <p class="text-xs text-text-muted dark:text-dark-text-secondary">
-          <template v-if="activeIconLib === 'builtin'">{{ iconNames.length }} built-in SVG icons. No external dependencies needed.</template>
-          <template v-else-if="activeIconLib === 'bootstrap'">Bootstrap Icons — 2,000+ open source icons. Load via CDN.</template>
-          <template v-else-if="activeIconLib === 'material'">Material Symbols — Google's icon library. Load via Google Fonts.</template>
+          {{ lucideIconNames.length }} Lucide + {{ builtinIconNames.length }} built-in icons shown. Browse all 7 supported libraries on the <span class="text-accent-brine font-medium">Icons</span> page.
         </p>
       </section>
 

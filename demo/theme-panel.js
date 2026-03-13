@@ -1,7 +1,8 @@
 /**
  * Fermenti UI - Floating Theme Panel
  * A compact, fixed panel that floats from the header next to the dark mode toggle.
- * Provides preset themes, color customization, font picker, and export — all with live preview.
+ * Provides preset themes, color customization, font picker, icon library, and export.
+ * Auto-generates dark mode variants from chosen light palette.
  */
 
 export default {
@@ -96,6 +97,7 @@ export default {
     },
 
     cssVariablesExport() {
+      const dark = this.deriveDarkColors();
       return `:root {
   --fi-bg-primary: ${this.colors.bgPrimary};
   --fi-bg-secondary: ${this.colors.bgSecondary};
@@ -103,6 +105,15 @@ export default {
   --fi-accent-brine: ${this.colors.accentBrine};
   --fi-text-primary: ${this.colors.textPrimary};
   --fi-text-muted: ${this.colors.textMuted};
+}
+
+.dark {
+  --fi-bg-primary: ${dark.bgPrimary};
+  --fi-bg-secondary: ${dark.bgSecondary};
+  --fi-bg-card: ${dark.bgCard};
+  --fi-accent-brine: ${dark.accentBrine};
+  --fi-text-primary: ${dark.textPrimary};
+  --fi-text-muted: ${dark.textMuted};
 }`;
     },
   },
@@ -112,6 +123,72 @@ export default {
       this.$emit('update:open', false);
     },
 
+    // --- Color utilities ---
+    hexToHsl(hex) {
+      let r = parseInt(hex.slice(1, 3), 16) / 255;
+      let g = parseInt(hex.slice(3, 5), 16) / 255;
+      let b = parseInt(hex.slice(5, 7), 16) / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+      return [h * 360, s * 100, l * 100];
+    },
+
+    hslToHex(h, s, l) {
+      h /= 360; s /= 100; l /= 100;
+      let r, g, b;
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      const toHex = x => {
+        const hex = Math.round(x * 255).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      };
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+    },
+
+    deriveDarkColors() {
+      const c = this.colors;
+      // Derive dark variants: flip light backgrounds to dark, light text to bright, keep hue
+      const [bgH, bgS] = this.hexToHsl(c.bgPrimary);
+      const [, , accentL] = this.hexToHsl(c.accentBrine);
+      return {
+        bgPrimary: this.hslToHex(bgH, Math.min(bgS, 30), 8),
+        bgSecondary: this.hslToHex(bgH, Math.min(bgS, 25), 12),
+        bgCard: this.hslToHex(bgH, Math.min(bgS, 20), 16),
+        accentBrine: accentL < 40
+          ? this.hslToHex(...this.hexToHsl(c.accentBrine).slice(0, 2), 55)
+          : c.accentBrine,
+        textPrimary: this.hslToHex(bgH, Math.min(bgS, 15), 92),
+        textMuted: this.hslToHex(bgH, Math.min(bgS, 10), 50),
+      };
+    },
+
+    // --- Theme application ---
     applyPreset(presetKey) {
       this.activePreset = presetKey;
       const preset = this.presets[presetKey];
@@ -163,7 +240,11 @@ export default {
         style.id = 'fi-theme-overrides';
         document.head.appendChild(style);
       }
-      // Use :root:not(.dark) so .dark {} in fermenti.css still wins in dark mode
+      const dark = this.deriveDarkColors();
+      const fontVars = `
+          --fi-font-serif: "${this.fonts.serif}", Georgia, serif;
+          --fi-font-sans: "${this.fonts.sans}", system-ui, sans-serif;
+          --fi-font-mono: "${this.fonts.mono}", monospace;`;
       style.textContent = `
         :root:not(.dark) {
           --fi-bg-primary: ${this.colors.bgPrimary};
@@ -171,15 +252,15 @@ export default {
           --fi-bg-card: ${this.colors.bgCard};
           --fi-accent-brine: ${this.colors.accentBrine};
           --fi-text-primary: ${this.colors.textPrimary};
-          --fi-text-muted: ${this.colors.textMuted};
-          --fi-font-serif: "${this.fonts.serif}", Georgia, serif;
-          --fi-font-sans: "${this.fonts.sans}", system-ui, sans-serif;
-          --fi-font-mono: "${this.fonts.mono}", monospace;
+          --fi-text-muted: ${this.colors.textMuted};${fontVars}
         }
         .dark {
-          --fi-font-serif: "${this.fonts.serif}", Georgia, serif;
-          --fi-font-sans: "${this.fonts.sans}", system-ui, sans-serif;
-          --fi-font-mono: "${this.fonts.mono}", monospace;
+          --fi-bg-primary: ${dark.bgPrimary};
+          --fi-bg-secondary: ${dark.bgSecondary};
+          --fi-bg-card: ${dark.bgCard};
+          --fi-accent-brine: ${dark.accentBrine};
+          --fi-text-primary: ${dark.textPrimary};
+          --fi-text-muted: ${dark.textMuted};${fontVars}
         }
       `;
     },
@@ -210,7 +291,6 @@ export default {
 
     handleClickOutside(e) {
       if (this.open && this.$refs.panel && !this.$refs.panel.contains(e.target)) {
-        // Check if click was on the toggle button (parent manages that)
         if (e.target.closest('[data-theme-toggle]')) return;
         this.close();
       }
@@ -261,7 +341,7 @@ export default {
         </div>
 
         <!-- Tab navigation -->
-        <div class="sticky top-[49px] bg-bg-card/95 dark:bg-dark-card/95 backdrop-blur-sm border-b border-bg-secondary dark:border-dark-secondary px-4 py-2 flex gap-1 z-10">
+        <div class="sticky top-[49px] bg-bg-card/95 dark:bg-dark-card/95 backdrop-blur-sm border-b border-bg-secondary dark:border-dark-secondary px-4 py-2 flex gap-1 z-10 overflow-x-auto">
           <button
             v-for="tab in [
               { id: 'presets', label: 'Presets' },
@@ -271,7 +351,7 @@ export default {
             ]"
             :key="tab.id"
             @click="activeTab = tab.id"
-            class="px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150"
+            class="px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 whitespace-nowrap"
             :class="activeTab === tab.id
               ? 'bg-accent-brine text-white shadow-sm'
               : 'text-text-muted dark:text-dark-text-secondary hover:bg-bg-secondary dark:hover:bg-dark-secondary hover:text-text-primary dark:hover:text-dark-text'"
@@ -295,7 +375,6 @@ export default {
                 : 'border-bg-secondary dark:border-dark-secondary hover:border-text-muted/30'"
             >
               <div class="flex items-center gap-3">
-                <!-- Swatches -->
                 <div class="flex gap-0.5 shrink-0">
                   <div
                     v-for="(color, ci) in presetSwatchColors(preset)"
@@ -304,12 +383,10 @@ export default {
                     :style="{ backgroundColor: color }"
                   ></div>
                 </div>
-                <!-- Label -->
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium text-text-primary dark:text-dark-text leading-tight">{{ preset.name }}</p>
                   <p class="text-[10px] text-text-muted dark:text-dark-text-secondary">{{ preset.vibe }}</p>
                 </div>
-                <!-- Check -->
                 <div v-if="activePreset === key" class="w-5 h-5 rounded-full bg-accent-brine flex items-center justify-center shrink-0">
                   <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
@@ -322,7 +399,7 @@ export default {
           <!-- === COLORS TAB === -->
           <div v-if="activeTab === 'colors'" class="space-y-3">
             <div class="flex items-center justify-between mb-1">
-              <p class="text-xs text-text-muted dark:text-dark-text-secondary">Changes apply live.</p>
+              <p class="text-xs text-text-muted dark:text-dark-text-secondary">Changes apply live. Dark mode auto-derived.</p>
               <button
                 @click="resetToPreset"
                 class="text-[10px] font-medium text-accent-brine hover:text-accent-brine/80 transition-colors px-2 py-1 rounded-lg hover:bg-bg-secondary dark:hover:bg-dark-secondary"
@@ -395,7 +472,6 @@ export default {
               </select>
             </div>
 
-            <!-- Compact font preview -->
             <div class="pt-3 border-t border-bg-secondary dark:border-dark-secondary space-y-2">
               <p class="text-[10px] uppercase tracking-wider font-semibold text-text-muted dark:text-dark-text-secondary">Preview</p>
               <p class="text-lg text-text-primary dark:text-dark-text" :style="{ fontFamily: '\\'' + fonts.serif + '\\', Georgia, serif' }">
@@ -413,7 +489,7 @@ export default {
           <!-- === EXPORT TAB === -->
           <div v-if="activeTab === 'export'" class="space-y-4">
             <div>
-              <p class="text-xs font-medium text-text-primary dark:text-dark-text mb-2">CSS Variables</p>
+              <p class="text-xs font-medium text-text-primary dark:text-dark-text mb-2">CSS Variables (light + dark)</p>
               <pre class="text-[10px] font-mono bg-bg-primary dark:bg-dark-primary rounded-lg border border-bg-secondary dark:border-dark-secondary p-3 overflow-x-auto text-text-primary dark:text-dark-text whitespace-pre-wrap leading-relaxed">{{ cssVariablesExport }}</pre>
             </div>
             <fi-button variant="primary" size="sm" @click="copyToClipboard(cssVariablesExport, 'css')" class="w-full">
